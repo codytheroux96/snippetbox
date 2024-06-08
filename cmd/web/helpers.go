@@ -45,5 +45,5 @@ func (app *application) newTemplateData(r *http.Request) templateData {
 }
 
 func (app *application) clientError(w http.ResponseWriter, status int) {
-    http.Error(w, http.StatusText(status), status)
+	http.Error(w, http.StatusText(status), status)
 }

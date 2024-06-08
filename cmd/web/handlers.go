@@ -57,10 +57,10 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
-    
-    data.Form = snippetCreateForm{
-        Expires: 365,
-    }
+
+	data.Form = snippetCreateForm{
+		Expires: 365,
+	}
 
 	app.render(w, r, http.StatusOK, "create.tmpl", data)
 }
@@ -78,12 +78,12 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-    form := snippetCreateForm {
-        Title: r.PostForm.Get("title"),
-        Content: r.PostForm.Get("content"),
-        Expires: expires,
-        FieldErrors: map[string]string{},
-    }
+	form := snippetCreateForm{
+		Title:       r.PostForm.Get("title"),
+		Content:     r.PostForm.Get("content"),
+		Expires:     expires,
+		FieldErrors: map[string]string{},
+	}
 
 	if strings.TrimSpace(form.Title) == "" {
 		form.FieldErrors["title"] = "This field cannot be blank"
@@ -95,15 +95,15 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 		form.FieldErrors["content"] = "This field cannot be blank"
 	}
 
-    if form.Expires != 1 && form.Expires != 7 && form.Expires != 365 {
-        form.FieldErrors["expires"] = "This field must equal 1, 7, or 365"
-    }
+	if form.Expires != 1 && form.Expires != 7 && form.Expires != 365 {
+		form.FieldErrors["expires"] = "This field must equal 1, 7, or 365"
+	}
 
 	if len(form.FieldErrors) > 0 {
 		data := app.newTemplateData(r)
-        data.Form = form
-        app.render(w, r, http.StatusUnprocessableEntity, "create.tmpl", data)
-        return
+		data.Form = form
+		app.render(w, r, http.StatusUnprocessableEntity, "create.tmpl", data)
+		return
 	}
 
 	id, err := app.snippets.Insert(form.Title, form.Content, form.Expires)
