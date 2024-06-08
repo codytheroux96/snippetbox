@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
-	"unicode/utf8"
 
 	"snippetbox.cody.net/internal/models"
 	"snippetbox.cody.net/internal/validator"
