@@ -11,10 +11,10 @@ import (
 )
 
 type snippetCreateForm struct {
-	Title   string
-	Content string
-	Expires int
-	validator.Validator
+	Title               string `form:"title"`
+	Content             string `form:"content"`
+	Expires             int    `form:"expires"`
+	validator.Validator `form:"-"`
 }
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -65,23 +65,13 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
-		return
-	}
+    var form snippetCreateForm
 
-	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
-		return
-	}
-
-	form := snippetCreateForm{
-		Title:       r.PostForm.Get("title"),
-		Content:     r.PostForm.Get("content"),
-		Expires:     expires,
-	}
+    err := app.decodePostForm(r, &form)
+    if err != nil {
+        app.clientError(w, http.StatusBadRequest)
+        return
+    }
 
     form.CheckField(validator.NotBlank(form.Title), "title", "This field cannot be blank")
     form.CheckField(validator.MaxChars(form.Title, 100), "title", "This field cannot be more than 100 characters long")
@@ -95,11 +85,11 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
         return
     }
 
-	id, err := app.snippets.Insert(form.Title, form.Content, form.Expires)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
+    id, err := app.snippets.Insert(form.Title, form.Content, form.Expires)
+    if err != nil {
+        app.serverError(w, r, err)
+        return
+    }
 
-	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
+    http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
 }
